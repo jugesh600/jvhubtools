@@ -9,6 +9,7 @@ import About from "./pages/About";
 import Contact from "./pages/Contact";
 import Blog from "./pages/Blog";
 import Tools from "./pages/Tools";
+import WordCounter from "./pages/Wordcounter";
 
 export default function App() {
   return (
@@ -24,6 +25,7 @@ export default function App() {
           <Route path="/contact" element={<Contact />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+            <Route path="/tools/word-counter" element={<WordCounter />} />
         </Routes>
       </main>
 
