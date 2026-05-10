@@ -2,6 +2,7 @@ import { useState } from "react";
 
 export default function WordCounter() {
   const [text, setText] = useState("");
+  const [showAlert, setShowAlert] = useState(false);
 
   const words = text.trim()
     ? text.trim().split(/\s+/).length
@@ -28,7 +29,10 @@ export default function WordCounter() {
 
   const handleCopy = async () => {
     await navigator.clipboard.writeText(text);
-    alert("Text copied successfully!");
+    setShowAlert(true);
+    setTimeout(() => {
+      setShowAlert(false);
+    }, 2000);
   };
 
   const handleDownload = () => {
@@ -54,6 +58,11 @@ export default function WordCounter() {
   return (
     <section className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
+        {showAlert && (
+          <div className="fixed top-6 right-6 z-50 bg-green-500 text-white px-6 py-4 rounded-2xl shadow-lg font-medium">
+            Text copied successfully!
+          </div>
+        )}
         <div className="text-center mb-10">
           <h1 className="text-4xl font-bold text-gray-900 mb-3">
             Word Counter Tool

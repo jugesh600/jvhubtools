@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 
-export default function ToolCard({ title, desc ,path}) {
+export default function ToolCard({ title, desc, path }) {
   return (
     <div className="bg-white rounded-2xl shadow-sm border p-6 hover:shadow-lg transition duration-300">
       {/* Icon */}
@@ -9,14 +9,10 @@ export default function ToolCard({ title, desc ,path}) {
       </div>
 
       {/* Title */}
-      <h3 className="text-xl font-bold text-gray-800 mb-3">
-        {title}
-      </h3>
+      <h3 className="text-xl font-bold text-gray-800 mb-3">{title}</h3>
 
       {/* Description */}
-      <p className="text-gray-600 mb-6 leading-relaxed">
-        {desc}
-      </p>
+      <p className="text-gray-600 mb-6 leading-relaxed">{desc}</p>
 
       {/* Button */}
       <Link

@@ -1,16 +1,18 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
-
-import Home from "./pages/Home";
-import Login from "./pages/Login";
-import Register from "./pages/Register";
-import About from "./pages/About";
-import Contact from "./pages/Contact";
-import Blog from "./pages/Blog";
-import Tools from "./pages/Tools";
-import WordCounter from "./pages/Wordcounter";
-
+import {
+  Tools,
+  Blog,
+  About,
+  Contact,
+  Login,
+  Home,
+  Register,
+  WordCounter,
+  PasswordGenerator,
+  QRCodeGenerator,
+} from "./utills/index";
 export default function App() {
   return (
     <Router>
@@ -25,7 +27,13 @@ export default function App() {
           <Route path="/contact" element={<Contact />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
-            <Route path="/tools/word-counter" element={<WordCounter />} />
+          <Route path="/tools/word-counter" element={<WordCounter />} />
+          <Route
+            path="/tools/password-generator"
+            element={<PasswordGenerator />}
+          />
+          <Route path="/tools/qr-code-generator" element={<QRCodeGenerator />} />
+          <Route path="*" element="Page not found" />
         </Routes>
       </main>
 
