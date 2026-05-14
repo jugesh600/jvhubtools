@@ -12,6 +12,8 @@ import {
   WordCounter,
   PasswordGenerator,
   QRCodeGenerator,
+  PageNotFound,
+  AdminDashboard,
 } from "./utills/index";
 export default function App() {
   return (
@@ -33,7 +35,8 @@ export default function App() {
             element={<PasswordGenerator />}
           />
           <Route path="/tools/qr-code-generator" element={<QRCodeGenerator />} />
-          <Route path="*" element="Page not found" />
+          <Route path="/admin-dashboard" element={<AdminDashboard />} />
+          <Route path="*" element={<PageNotFound />} />
         </Routes>
       </main>
 

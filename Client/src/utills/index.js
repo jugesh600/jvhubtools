@@ -8,6 +8,8 @@ import WordCounter from "../ToolPages/Wordcounter";
 import PasswordGenerator from "../ToolPages/PasswordGenerator";
 import QRCodeGenerator from "../ToolPages/QrGenerator";
 import Home from "../pages/Home";
+import PageNotFound from "../components/PageNotFound";
+import AdminDashboard from "../components/AdminDashboard";
 export  {
   Login,
   Home,
@@ -18,5 +20,7 @@ export  {
   Tools,
   WordCounter,
   PasswordGenerator,
-  QRCodeGenerator
+  QRCodeGenerator,
+  PageNotFound,
+  AdminDashboard,
 }

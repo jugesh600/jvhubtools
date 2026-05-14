@@ -1,13 +1,22 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import axios from "axios";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function Register() {
+  const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
-    fullName: "",
+    name: "",
     email: "",
     password: "",
     confirmPassword: "",
+    otp: "",
   });
+
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState("");
+  const [messageType, setMessageType] = useState("");
+  const [showOtpField, setShowOtpField] = useState(false);
 
   const handleChange = (e) => {
     setFormData({
@@ -16,118 +25,201 @@ export default function Register() {
     });
   };
 
-  const handleSubmit = (e) => {
+  // STEP 1 → Register + Send OTP
+  const handleRegister = async (e) => {
     e.preventDefault();
+    setMessage("");
 
-    console.log("Register Data:", formData);
+    if (formData.password !== formData.confirmPassword) {
+      setMessage("Passwords do not match");
+      setMessageType("error");
+      return;
+    }
 
-    alert("Register UI ready hai, backend baad me connect karenge 🚀");
+    try {
+      setLoading(true);
 
-    setFormData({
-      fullName: "",
-      email: "",
-      password: "",
-      confirmPassword: "",
-    });
+      const res = await axios.post(
+        "http://localhost:5000/api/user/register",
+        {
+          name: formData.name,
+          email: formData.email,
+          password: formData.password,
+        }
+      );
+
+      setMessage(
+        res.data.message || "OTP sent successfully"
+      );
+      setMessageType("success");
+
+      // OTP field show karo
+      setShowOtpField(true);
+
+    } catch (error) {
+      setMessage(
+        error.response?.data?.message ||
+          "Registration Failed"
+      );
+      setMessageType("error");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // STEP 2 → Verify OTP
+  const handleVerifyOtp = async () => {
+    if (!formData.otp.trim()) {
+      setMessage("Please enter OTP");
+      setMessageType("error");
+      return;
+    }
+
+    try {
+      setLoading(true);
+
+      const res = await axios.post(
+        "http://localhost:5000/api/user/verify-otp",
+        {
+          email: formData.email,
+          otp: formData.otp,
+        }
+      );
+
+      setMessage(
+        res.data.message || "Account verified successfully"
+      );
+      setMessageType("success");
+
+      setTimeout(() => {
+        navigate("/login");
+      }, 1500);
+
+    } catch (error) {
+      setMessage(
+        error.response?.data?.message ||
+          "OTP Verification Failed"
+      );
+      setMessageType("error");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <section className="min-h-screen bg-gray-50 flex items-center justify-center px-4 py-8">
-      <div className="w-full max-w-3xl bg-white rounded-2xl shadow-md border grid md:grid-cols-2 overflow-hidden">
+    <section className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
+      <div className="w-full max-w-md bg-white rounded-3xl shadow-lg border border-gray-100 p-8">
 
-        {/* Left Side */}
-        <div className="hidden md:flex flex-col justify-center bg-blue-600 text-white p-6">
-          <p className="text-xs font-medium mb-2">
-            Join JVToolsHub 🚀
-          </p>
-
-          <h1 className="text-2xl font-bold leading-tight mb-3">
-            Create Your
-            <br />
-            Account
+        <div className="text-center mb-8">
+          <h1 className="text-3xl font-bold text-gray-900">
+            Create Account
           </h1>
 
-          <p className="text-blue-100 text-sm leading-relaxed">
-            Access PDF, SEO, Image tools and many more
-            powerful utilities for free.
+          <p className="text-gray-500 mt-2">
+            Register to access JVToolsHub
           </p>
         </div>
 
-        {/* Right Side */}
-        <div className="p-5 md:p-6">
-          <div className="max-w-xs mx-auto">
+        {message && (
+          <div
+            className={`mb-5 text-center text-sm font-medium px-4 py-3 rounded-xl ${
+              messageType === "success"
+                ? "bg-green-100 text-green-700"
+                : "bg-red-100 text-red-700"
+            }`}
+          >
+            {message}
+          </div>
+        )}
 
-            <h2 className="text-xl font-bold text-gray-900 mb-1">
-              Register
-            </h2>
+        <form
+          onSubmit={handleRegister}
+          className="space-y-5"
+        >
+          <input
+            type="text"
+            name="name"
+            placeholder="Full Name"
+            value={formData.name}
+            onChange={handleChange}
+            required
+            className="w-full px-5 py-3 rounded-2xl border border-gray-300 outline-none focus:ring-2 focus:ring-blue-500"
+          />
 
-            <p className="text-gray-500 text-sm mb-5">
-              Create your account
-            </p>
+          <input
+            type="email"
+            name="email"
+            placeholder="Email Address"
+            value={formData.email}
+            onChange={handleChange}
+            required
+            className="w-full px-5 py-3 rounded-2xl border border-gray-300 outline-none focus:ring-2 focus:ring-blue-500"
+          />
 
-            <form onSubmit={handleSubmit} className="space-y-3">
+          <input
+            type="password"
+            name="password"
+            placeholder="Password"
+            value={formData.password}
+            onChange={handleChange}
+            required
+            className="w-full px-5 py-3 rounded-2xl border border-gray-300 outline-none focus:ring-2 focus:ring-blue-500"
+          />
 
+          <input
+            type="password"
+            name="confirmPassword"
+            placeholder="Confirm Password"
+            value={formData.confirmPassword}
+            onChange={handleChange}
+            required
+            className="w-full px-5 py-3 rounded-2xl border border-gray-300 outline-none focus:ring-2 focus:ring-blue-500"
+          />
+
+          {!showOtpField ? (
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-2xl font-medium transition"
+            >
+              {loading
+                ? "Sending OTP..."
+                : "Create Account"}
+            </button>
+          ) : (
+            <>
               <input
                 type="text"
-                name="fullName"
-                placeholder="Full Name"
-                value={formData.fullName}
+                name="otp"
+                placeholder="Enter OTP"
+                value={formData.otp}
                 onChange={handleChange}
-                required
-                className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-              />
-
-              <input
-                type="email"
-                name="email"
-                placeholder="Email Address"
-                value={formData.email}
-                onChange={handleChange}
-                required
-                className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-              />
-
-              <input
-                type="password"
-                name="password"
-                placeholder="Password"
-                value={formData.password}
-                onChange={handleChange}
-                required
-                className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-              />
-
-              <input
-                type="password"
-                name="confirmPassword"
-                placeholder="Confirm Password"
-                value={formData.confirmPassword}
-                onChange={handleChange}
-                required
-                className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                className="w-full px-5 py-3 rounded-2xl border border-gray-300 outline-none focus:ring-2 focus:ring-green-500"
               />
 
               <button
-                type="submit"
-                className="w-full py-3 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-700 transition text-sm"
+                type="button"
+                onClick={handleVerifyOtp}
+                disabled={loading}
+                className="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-2xl font-medium transition"
               >
-                Create Account
+                {loading
+                  ? "Verifying..."
+                  : "Verify OTP"}
               </button>
+            </>
+          )}
+        </form>
 
-            </form>
-
-            <p className="text-center text-sm text-gray-600 mt-5">
-              Already have an account?{" "}
-              <Link
-                to="/login"
-                className="text-blue-600 font-semibold hover:underline"
-              >
-                Login
-              </Link>
-            </p>
-
-          </div>
-        </div>
+        <p className="text-center text-gray-500 text-sm mt-6">
+          Already have an account?{" "}
+          <Link
+            to="/login"
+            className="text-blue-600 font-medium hover:underline"
+          >
+            Login Here
+          </Link>
+        </p>
 
       </div>
     </section>
